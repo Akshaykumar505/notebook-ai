@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String     @id @default(uuid())
+  email        String     @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  notebooks    Notebook[]
+}
+
+model Notebook {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  owner       User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId     String
+
+  sources     Source[]
+
+  @@index([ownerId])
+}
+
+model Source {
+  id            String   @id @default(uuid())
+  title         String
+
+  // SQLite doesn't support native enums, so we use String here and
+  // validate the allowed values (PDF, TEXT, URL, YOUTUBE, VTT) with Zod
+  // in the application code instead (see sources.routes.ts).
+  type          String
+
+  // Allowed values: UPLOADING, INDEXING, READY, FAILED
+  status        String   @default("UPLOADING")
+  errorMessage  String?
+
+  originalRef   String?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  notebook      Notebook @relation(fields: [notebookId], references: [id], onDelete: Cascade)
+  notebookId    String
+
+  chunks        Chunk[]
+
+  @@index([notebookId])
+}
+
+model Chunk {
+  id          String   @id @default(uuid())
+  content     String
+  chunkIndex  Int
+
+  metadata    String
+
+  vectorId    String   @unique
+
+  createdAt   DateTime @default(now())
+
+  source      Source   @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  sourceId    String
+
+  @@index([sourceId])
+}

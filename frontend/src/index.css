@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+/*
+  Design tokens for Notebook AI — an "annotated research notebook" theme.
+  Light, warm-neutral paper background with an ink-navy + steel-blue palette
+  and an amber "highlighter" accent reserved for citations, so citations feel
+  like something you'd mark up with a highlighter pen in a real notebook.
+*/
+@theme {
+  --color-paper: #f7f7f4;
+  --color-surface: #ffffff;
+  --color-ink: #1c2333;
+  --color-slate: #5b6472;
+  --color-steel: #3d5a80;
+  --color-steel-dark: #2f4763;
+  --color-amber: #d9a441;
+  --color-amber-dark: #b8862d;
+  --color-sage: #6b8f71;
+  --color-brick: #c1666b;
+  --color-line: #e4e3de;
+
+  --font-display: 'Lora', serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Visible keyboard focus ring everywhere — accessibility floor from the design skill */
+:focus-visible {
+  outline: 2px solid var(--color-steel);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

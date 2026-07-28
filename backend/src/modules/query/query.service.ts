@@ -1,6 +1,5 @@
-import { env } from "@/config/env";
 import { AppError } from "@/middleware/errorHandler";
-import { openai } from "@/modules/embeddings/openai.client";
+import { generateAnswer } from "./llm.service";
 import { retrieveRelevantChunks, RetrievedChunk } from "@/modules/retrieval/retrieval.service";
 
 export interface Citation {
@@ -40,19 +39,10 @@ export async function answerQuestion(notebookId: string, question: string): Prom
 
   const { contextBlock, citations } = buildContext(chunks);
 
-  const completion = await openai.chat.completions.create({
-    model: env.OPENAI_CHAT_MODEL,
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      {
-        role: "user",
-        content: `Source excerpts:\n\n${contextBlock}\n\nQuestion: ${question}`,
-      },
-    ],
-    temperature: 0.2,
-  });
-
-  const answer = completion.choices[0]?.message.content ?? "";
+  const answer = await generateAnswer(
+    SYSTEM_PROMPT,
+    `Source excerpts:\n\n${contextBlock}\n\nQuestion: ${question}`
+  );
 
   return { answer, citations };
 }
